@@ -2,6 +2,7 @@ package main
 
 import (
 	"apiProject/internal/app"
+	"apiProject/internal/routes"
 	"flag"
 	"fmt"
 	"net/http"
@@ -22,10 +23,11 @@ func main() {
 
 	app.Logger.Printf("Running app at http://localhost:%d\n", port)
 
-	http.HandleFunc("/health", HealthCheck)
+	router := routes.SetupRoutes(app)
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
+		Handler:      router,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
@@ -36,8 +38,4 @@ func main() {
 	if err != nil {
 		app.Logger.Fatal(err)
 	}
-}
-
-func HealthCheck(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Status is available")
 }
