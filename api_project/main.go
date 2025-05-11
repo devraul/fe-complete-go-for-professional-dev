@@ -21,6 +21,9 @@ func main() {
 		panic(err)
 	}
 
+	// At the very end of the application, go ahead and close the connection
+	defer app.DB.Close()
+
 	app.Logger.Printf("Running app at http://localhost:%d\n", port)
 
 	router := routes.SetupRoutes(app)
