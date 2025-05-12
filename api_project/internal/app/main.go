@@ -2,6 +2,7 @@ package app
 
 import (
 	"apiProject/internal/api"
+	migration "apiProject/internal/migrations"
 	"apiProject/internal/store"
 	"database/sql"
 	"log"
@@ -20,6 +21,12 @@ func NewApplication() (*Application, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	err = store.MigrateFS(db, migration.FS, ".")
+	if err != nil {
+		// if DB is not working, the app shouldn't as well
+		panic(err)
 	}
 
 	// Stores
