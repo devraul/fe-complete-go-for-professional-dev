@@ -35,7 +35,7 @@ func CreatePostgresWorkoutStore(db *sql.DB) *PostgresWorkoutStore {
 // In all methods, we'll accept WorkoutStore instead of PostgresWorkoutStore
 // to not tie the interface to a specific implementation (postgres).
 type WorkoutStore interface {
-	CreateWorkout(*Workout) error
+	CreateWorkout(*Workout) (*Workout, error)
 	GetWorkoutByID(int) (*Workout, error)
 }
 

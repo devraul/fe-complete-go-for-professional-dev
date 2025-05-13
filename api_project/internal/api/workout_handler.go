@@ -1,6 +1,8 @@
 package api
 
 import (
+	"apiProject/internal/store"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -8,14 +10,37 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type WorkoutHandler struct{}
+type WorkoutHandler struct {
+	workoutStore store.WorkoutStore
+}
 
-func CreateWorkoutHandler() *WorkoutHandler {
-	return &WorkoutHandler{}
+func CreateWorkoutHandler(workoutStore store.WorkoutStore) *WorkoutHandler {
+	return &WorkoutHandler{
+		workoutStore,
+	}
 }
 
 func (wh *WorkoutHandler) HandleCreateWorkout(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Created workout")
+	var workout store.Workout
+	// json handles http payload
+	err := json.NewDecoder(r.Body).Decode(&workout) // content to be parsed is the request body
+
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Failed to create workout", http.StatusInternalServerError)
+		return
+	}
+
+	createdWorkout, err := wh.workoutStore.CreateWorkout(&workout)
+
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Failed to create workout", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(createdWorkout)
 }
 
 func (wh *WorkoutHandler) HandleGetWorkoutById(w http.ResponseWriter, r *http.Request) {
