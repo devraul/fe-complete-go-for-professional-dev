@@ -16,14 +16,15 @@ type Application struct {
 }
 
 func NewApplication() (*Application, error) {
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 	db, err := store.Open()
 
 	if err != nil {
 		return nil, err
 	}
 
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 	err = store.MigrateFS(db, migration.FS, ".")
+
 	if err != nil {
 		// if DB is not working, the app shouldn't as well
 		panic(err)
